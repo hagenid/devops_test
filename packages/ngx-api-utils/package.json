@@ -1,0 +1,30 @@
+{
+  "name": "ngx-api-utils",
+  "version": "1.0.7",
+  "author": "Radoslav Kirilov <rkirilow@gmail.com> (https://github.com/smoke)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ngx-api-utils/ngx-api-utils.git"
+  },
+  "keywords": [
+    "ngx-api-utils",
+    "angular",
+    "http-api",
+    "rest",
+    "rest-api",
+    "authentication",
+    "jwt",
+    "oauth2",
+    "jwt-token",
+    "oauth-token",
+    "angular-service",
+    "npm-package"
+  ],
+  "peerDependencies": {
+    "@angular/common": "^6.0.0-rc.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0",
+    "@angular/core": "^6.0.0-rc.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0",
+    "@angular/router": "^6.0.0-rc.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0",
+    "rxjs": "^6.0.0-rc.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0"
+  }
+}
