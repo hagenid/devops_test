@@ -48,7 +48,7 @@ jobs:
           pwd
           ls -lah
           envsubst '${DB_DATABASE} ${DB_USERNAME} ${DB_PASSWORD}' <.env.dev.example | sponge .env.dev.example
-          cat .env.dev.example
+          cat .env.dev.exampl
           cd
           cp -fr ${{ env.DEPLOY_REPO_PATH }}/${{ env.BRANCH }}/. ${{ env.CODE_REPO_PATH }}/
           cd ${{ env.CODE_REPO_PATH }}
