@@ -1,0 +1,61 @@
+name: Deploy-Development
+
+on:
+  push:
+    branches:
+      - development # Push events on development branch gc-cd repo
+
+  repository_dispatch: # events from eduwo.ch-relaunch-2019 repo test
+
+jobs:
+  deploy-development:
+    name: Development-Deploy
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout and build eduwo project
+      uses: maddox/actions/ssh@master
+      env:
+        PRIVATE_KEY: ${{ secrets.KEY_DEV_V2 }}
+        HOST: ${{ secrets.HOST_DEV_V2 }}
+        USER: github
+        CODE_REPO_PATH: edw-dev-v2
+        DEPLOY_REPO_PATH: edw-cd
+        BRANCH: development
+        DB_DATABASE: ${{ secrets.DB_DATABASE }}
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      with:
+        args: |
+          echo "export env vars"
+          export DB_DATABASE="${{ env.DB_DATABASE }}" && echo "export DB_DATABASE"
+          export DB_USERNAME="${{ env.DB_USERNAME }}" && echo "export DB_USERNAME"
+          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}" && echo "export DB_PASSWORD"
+          [ -d ./${{ env.CODE_REPO_PATH }} ] || git clone git@github.com:eduwo/eduwo.ch-relaunch-2019.git ${{ env.CODE_REPO_PATH }} || echo "create code folder"
+          cd ${{ env.CODE_REPO_PATH }} && echo "cd to ${{ env.CODE_REPO_PATH }}"
+          git reset --hard
+          git fetch --all
+          git checkout ${{ env.BRANCH }}
+          git pull
+          cd && echo "cd to home"
+          [ -d ./${{ env.DEPLOY_REPO_PATH }} ] || git clone git@github.com:eduwo/gc-cd.git ${{ env.DEPLOY_REPO_PATH }}
+          cd ${{ env.DEPLOY_REPO_PATH }} && echo "cd to ${{ env.DEPLOY_REPO_PATH }}"
+          git checkout ${{ env.BRANCH }} && echo "git checkout ${{ env.BRANCH }}"
+          git reset --hard
+          git fetch --all
+          cd ${{ env.BRANCH }} && echo "cd ${{ env.BRANCH }}"
+          git checkout .env.dev.example
+          pwd
+          ls -lah
+          envsubst '${DB_DATABASE} ${DB_USERNAME} ${DB_PASSWORD}' <.env.dev.example | sponge .env.dev.example
+          cat .env.dev.example
+          cd
+          cp -fr ${{ env.DEPLOY_REPO_PATH }}/${{ env.BRANCH }}/. ${{ env.CODE_REPO_PATH }}/
+          cd ${{ env.CODE_REPO_PATH }}
+          ls -lah
+          sudo docker-compose -f docker-compose-${{ env.BRANCH }}.yml down
+          sudo docker system prune -af
+          sudo docker-compose -f docker-compose-${{ env.BRANCH }}.yml up --build -d
+          sudo docker ps -a
+          # TODO
+          # move .env .phar files to outside and import them during building/deployment
